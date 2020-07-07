@@ -49,7 +49,7 @@ void createFile(vector<vector<int>>& matrix){
 vector<vector<int>> fillBinaryMatrix(my_priority_queue& priority, int row, int column){
     vector<vector<int>> binaryMatrix(row, vector<int> (column, 0));
 
-    int major = row > column ? row : column;
+    int major = column;
 
     while(!priority.empty()) {
         pair<int,int> tmp;
