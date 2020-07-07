@@ -16,5 +16,6 @@ cpp:
 
 clean:
 	-rm -f *.o
+	-rm -f *.txt
 	-rm -f $(TARGETC)
 	-rm -f $(TARGETCPP)
