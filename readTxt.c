@@ -1,64 +1,99 @@
 #include <stdio.h>
 #include <string.h>
-#include <stdbool.h> 
+#include <stdbool.h>
 #define MAX 10000
-#define MAXI 10000
-int totalRows=0;
-int totalColumns=0;
-bool bandera=false;
+int totalRows = 0;
+int totalColumns = 0;
+bool bandera = false;
 int maze[MAX][MAX];
+int nodes = 0;
 
+int adjMaze[MAX][MAX];
+int matriz[MAX][4];
 
-void read(){
-    int i=0;
-    char linea[1024];
-    FILE *fich;
- 
-    fich = fopen("laberinto.txt", "r");
-    while(fgets(linea, 1024, (FILE*) fich)) {
-        totalColumns = strlen(linea);
+void read()
+{
+    char c[10];
+    char matriz[10][10];
+    int i = 0;
+    while (fgets(c, 100, stdin))
+    {
         
-        char *p;
-        p = linea;
-        while (*p != '\n' & *p!='\0') {
 
-            maze[totalRows][i]= *p -'0';
-            printf("%d ",maze[totalRows][i]);
-            
+        char *p;
+        p = c;
+        while (*p != '\n' & *p != '\0')
+        {
+            maze[totalRows][i] = *p - '0';
             p++;
             i++;
         }
+        if (totalRows == 0)
+        {
+            totalColumns = strlen(c);
+            totalColumns--;
+        }
+
         totalRows++;
-        i=0;
-        printf("\n");
+        i = 0;
+        
+    }
+}
+
+void matrizAdj()
+{
+    int i, j, tmp, tmpWest, tmpNorth;
+    for (i = 0; i < totalRows; i++)
+    {
+        for (j = 0; j < totalColumns; j++)
+        {
+            tmp = (i * totalColumns) + j;
+            switch (maze[i][j])
+            {
+            case 1:
+                tmpWest = tmp - 1;
+                matriz[tmp][2] = tmpWest;
+                matriz[tmpWest][1] = tmp;
+                break;
+            case 2:
+                tmpNorth = tmp - totalColumns;
+                matriz[tmp][0] = tmpNorth;
+                matriz[tmpNorth][3] = tmp;
+                break;
+            case 3:
+
+                tmpWest = tmp - 1;
+                matriz[tmp][2] = tmpWest;
+                matriz[tmpWest][1] = tmp;
+
+                tmpNorth = tmp - totalColumns;
+                matriz[tmp][0] = tmpNorth;
+                matriz[tmpNorth][3] = tmp;
 
 
+                break;
+            }
+        }
     }
 
-    totalColumns=totalColumns-1;
-    fclose(fich);
-
-
 }
 
+int main()
+{
 
-int main() {
- 
-   read();
-   printf("Filas: %d\n",totalRows);
-   printf("Columnas: %d\n",totalColumns);
-   for (int i = 0; i < 4; i++)
-   {
-       for (int j = 0; j < 5; j++)
-       {
-          printf("%d ",maze[i][j]);
-       }
-       printf("\n");
-       
-   }
-   
-
+    read();
+    nodes = totalColumns * totalRows;
+    memset(matriz, -1, MAX);
+    matrizAdj();
+    for (int i = 0; i < nodes; i++)
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            printf("%d, ", matriz[i][j]);
+        }
+        printf("\n");
+    }
 
 
+    return 0;
 }
- 
