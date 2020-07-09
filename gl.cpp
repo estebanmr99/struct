@@ -73,20 +73,15 @@ return randomInt;
 
 void createFile(vector<vector<int>> &matrix)
 {
-    ofstream myfile("laberinto.txt");
-    if (myfile.is_open())
+
+    for (int i = 0; i < matrix.size(); i++)
     {
-        for (int i = 0; i < matrix.size(); i++)
-        {
-            for (int j = 0; j < matrix[i].size(); j++)
-                myfile << matrix[i][j];
-            if(!(i == matrix.size() - 1))
-                myfile << endl;
-        }
-        myfile.close();
+        for (int j = 0; j < matrix[i].size(); j++)
+            cout << matrix[i][j];
+        if(!(i == matrix.size() - 1))
+            cout << endl;
     }
-    else
-        cout << "Unable to open file";
+
 }
 
 vector<vector<int>> fillBinaryMatrix(my_priority_queue &priority, int row, int column)
@@ -184,18 +179,22 @@ struct UnionFind
 
 int n;
 
-struct Ar
+typedef struct Ar
 {
     int a, b, w;
-};
+} Edge;
 bool operator<(const Ar &a, const Ar &b) { return a.w < b.w; }
 vector<Ar> E;
+
+int cmp (Edge a1, Edge a2){
+    return a1.w <= a2.w;
+}
 
 vector<ii> kruskal()
 {
     vector<ii> edges;
     ll cost = 0;
-    sort(E.begin(), E.end()); //ordenar aristas de menor a mayor
+    sort(E.begin(), E.end(), cmp); //ordenar aristas de menor a mayor
     uf.init(n);
 
     forall(it, E)
@@ -220,9 +219,9 @@ vector<ii> kruskal()
 
 void convert(int filas, int columnas)
 {
-    for (int i = 0; i < filas; i++)
+    for (int i = 0; i < filas * columnas; i++)
     {
-        for (int j = 0; j < columnas; j++)
+        for (int j = 0; j < G[i].size(); j++)
         {
             int a = G[i][j].second;
             int b = G[i][j].first;
@@ -324,7 +323,7 @@ void createGraph(int rows, int columns)
         }
         i++;
     }
-    completeGraph(rows, columns);
+    // completeGraph(rows, columns);
 }
 
 int main(int argc, char **argv)
@@ -338,6 +337,10 @@ int main(int argc, char **argv)
     if (funcion == "P")
     {
         vector<ii> cost = prim();
+        for (ii i : cost)
+        {
+            cout << "Arista: " << i.first << ", " << i.second << endl;
+        }
         my_priority_queue mpq;
         mpq = fillPriorityQueue(cost);
         vector<vector<int>> binaryMatrix = fillBinaryMatrix(mpq, rows, columns);
@@ -354,11 +357,6 @@ int main(int argc, char **argv)
         }
         my_priority_queue mpq;
         mpq = fillPriorityQueue(edges);
-        // while (!mpq.empty())
-        // {
-        //     cout << mpq.top().first << " - " << mpq.top().second << "\n";
-        //     mpq.pop();
-        // }
         vector<vector<int>> binaryMatrix = fillBinaryMatrix(mpq, rows, columns);
         createFile(binaryMatrix);
     }
