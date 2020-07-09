@@ -8,7 +8,7 @@
 #include <string>
 #include <queue>
 
-#define oo 1 << 30
+
 #define SET(a, b) ((a) |= (1UL << (b)))
 #define CLEAR(a, b) ((a) & ~(1UL << (b)))
 #define FLIP(a, b) ((a) ^ (1UL << (b)))
@@ -256,25 +256,6 @@ void print(int cantNodes)
     }
 }
 
-void completeGraph(int rows, int columns)
-{
-    int cantNodes = rows * columns;
-    for (int i = 0; i < cantNodes; i++)
-    {
-        int j = 0;
-        while (j < cantNodes)
-        {
-            if (member(G[i], j))
-                j++;
-            else
-            {
-                G[i].push_back(make_pair(oo, j));
-                j++;
-            }
-        }
-    }
-}
-
 void createGraph(int rows, int columns)
 {
     int nodo = 0;
@@ -323,7 +304,7 @@ void createGraph(int rows, int columns)
         }
         i++;
     }
-    // completeGraph(rows, columns);
+    
 }
 
 int main(int argc, char **argv)
@@ -337,10 +318,6 @@ int main(int argc, char **argv)
     if (funcion == "P")
     {
         vector<ii> cost = prim();
-        for (ii i : cost)
-        {
-            cout << "Arista: " << i.first << ", " << i.second << endl;
-        }
         my_priority_queue mpq;
         mpq = fillPriorityQueue(cost);
         vector<vector<int>> binaryMatrix = fillBinaryMatrix(mpq, rows, columns);
@@ -351,10 +328,7 @@ int main(int argc, char **argv)
         n = sizeof(G);
         convert(rows, columns);
         vector<ii> edges = kruskal();
-        for (ii i : edges)
-        {
-            cout << "Arista: " << i.first << ", " << i.second << endl;
-        }
+
         my_priority_queue mpq;
         mpq = fillPriorityQueue(edges);
         vector<vector<int>> binaryMatrix = fillBinaryMatrix(mpq, rows, columns);
