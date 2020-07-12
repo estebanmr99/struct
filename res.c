@@ -19,13 +19,19 @@
 
 int totalRows, totalColumns, nodes;
 
-int maze[MAX][CAR], dfsVisited[MAX];
+int maze[MAX][CAR], bfsVisited[MAX],dfsVisited[MAX];;
 int inputMaze[MAXI][MAXI];
+
+struct Path *bfsPath;
+
+struct Path* pathsBFS[MAX];
+struct Queue* queue = NULL;
 
 struct Path *dfsPath;
 
 struct Path* pathsDFS[MAX];
-struct StackNode* stack = NULL;
+struct Node* stack = NULL;
+
 
 struct Path {
     int lastNode;
@@ -33,42 +39,84 @@ struct Path {
     int arrNodes[MAX];
 };
 
-struct StackNode { 
+struct Node {  
     struct Path* path;
-    struct StackNode* next; 
+    struct Node* next; 
 }; 
+
   
-struct StackNode* newNode(struct Path *newPath) 
+struct Node* newNode(struct Path *newPath) 
 { 
-    struct StackNode* stackNode = (struct StackNode*)malloc(sizeof(struct StackNode)); 
+    struct Node* stackNode = (struct Node*)malloc(sizeof(struct Node)); 
     stackNode->path = newPath; 
     stackNode->next = NULL; 
     return stackNode; 
 }
   
-int isEmpty(struct StackNode* stack) 
+int isEmpty(struct Node* stack) 
 {
     return !stack; 
 } 
   
-void push(struct StackNode** stack, struct Path *newPath) 
+void push(struct Node** stack, struct Path *newPath) 
 { 
-    struct StackNode* stackNode = newNode(newPath); 
+    struct Node* stackNode = newNode(newPath); 
     stackNode->next = *stack; 
     *stack = stackNode; 
 } 
   
-struct Path* pop(struct StackNode** stack) 
+struct Path* pop(struct Node** stack) 
 { 
     if (isEmpty(*stack)) 
         return NULL; 
-    struct StackNode* temp = *stack; 
+    struct Node* temp = *stack; 
     *stack = (*stack)->next; 
     struct Path* popped = temp->path; 
     free(temp); 
   
     return popped; 
 } 
+
+// The queue, front stores the front node of LL and rear stores the 
+// last node of LL 
+struct Queue { 
+    struct Node *front, *rear; 
+}; 
+  
+
+struct Queue* createQueue() 
+{ 
+    struct Queue* q = (struct Queue*)malloc(sizeof(struct Queue)); 
+    q->front = q->rear = NULL; 
+    return q; 
+}
+int isEmptyQ(struct Queue* queue) 
+{ 
+    return !queue; 
+}  
+
+struct Path* copyPathBFS(){
+    struct Path* path = (struct Path*)malloc(sizeof(struct Path));
+    int i;
+    
+    if (bfsPath == NULL){
+        path->len = 0;
+        path->lastNode = 0;
+
+        for(i = 0; i < MAX; i++)
+            path->arrNodes[i] = 0;
+
+        return path;
+    }
+    
+    path->len = bfsPath->len;
+    path->lastNode = bfsPath->lastNode;
+
+    for(i = 0; i < bfsPath->len; i++)
+        path->arrNodes[i] = bfsPath->arrNodes[i];
+    
+    return path;
+}
 
 struct Path* copyPath(){
     struct Path* path = (struct Path*)malloc(sizeof(struct Path));
@@ -93,12 +141,43 @@ struct Path* copyPath(){
     return path;
 }
   
-struct Path* peek(struct StackNode* stack) 
+
+void enQueue(struct Queue* q, struct Path* k) 
 { 
-    if (isEmpty(stack)) 
+    struct Node* temp = newNode(k); 
+  
+   
+    if (q->rear == NULL) { 
+        q->front = q->rear = temp; 
+        return; 
+    } 
+  
+    
+    q->rear->next = temp; 
+    q->rear = temp; 
+} 
+  
+
+struct Path* deQueue(struct Queue* q) 
+{ 
+    
+    if (q->front == NULL) 
         return NULL; 
-    return stack->path;
-}
+  
+    
+    struct Node* temp = q->front; 
+    struct Path* deQueue= temp->path;
+    
+  
+    q->front = q->front->next; 
+  
+ 
+    if (q->front == NULL) 
+        q->rear = NULL; 
+  
+    free(temp); 
+    return deQueue;
+} 
 
 void dfsToOutput(double time_taken){
     int i;
@@ -144,7 +223,123 @@ void dfsToOutput(double time_taken){
     printf("\n");
     
 }
+void bfsToOutput(double time_taken){
+    int i;
+    int steps =  bfsPath->len;
 
+    int path[steps];
+    for(i=0;i<steps;i++)
+        path[i]=0;
+
+    struct Path *currentBFSPath = bfsPath;
+    int count = 0;
+    int count2 = 0;
+    int saved = (steps * 2) - 1;
+    int bits = (saved < 32) ? saved : 32;
+    while (count < steps) {
+        if(count % 16 == 0 && count != 0){
+            saved = saved - 32;
+            bits = (saved < 32) ? saved : 32;
+            count2++;
+        }
+
+        int actual = currentBFSPath->arrNodes[count];
+        
+        if (actual == 1){ //este
+            SET(path[count2], (bits - 1));
+        } else if(actual == 2){ //oeste
+            SET(path[count2], (bits));
+        } else if (actual == 3){ //sur
+            SET(path[count2], (bits));
+            SET(path[count2], (bits - 1));
+        } // para norte como es 00 no se hace nada
+        
+        bits = bits - 2;
+        count++; 
+    }
+
+    printf("Tiempo de bfs: %d min, %d segundos, %d ms\n", (int)(time_taken/60),(int)time_taken, (int)(time_taken*1000)); 
+
+    printf("%d", steps);
+    int stepsToPrint = (steps * 2) / 32;
+    for(i = 0; i <= stepsToPrint; i++)
+        printf(" %d ", path[i]);
+    printf("\n");
+    
+}
+void bfs(int node, int des)
+{
+    int j;
+    int actual = 0;
+    int tmpPosition = 0;
+    int nonNodesLeft = 0;
+
+    queue = createQueue();
+    struct Path* tmp;
+
+    tmp = copyPathBFS();
+    tmp->lastNode = node;
+    enQueue(queue,tmp);
+
+
+    while(!isEmptyQ(queue)){
+
+        bfsPath =  deQueue(queue);
+        node = bfsPath->lastNode;
+
+        bfsVisited[node] = 1;
+
+        if(node == des){
+            break;
+        }
+
+        for(j=0;j<CAR;j++){
+            
+            if(!bfsVisited[maze[node][j]] && maze[node][j] != -1){
+
+                actual = maze[node][j];
+                tmp = copyPathBFS();
+                tmp->len++;
+                tmp->lastNode = actual;
+
+                tmpPosition = tmp->len - 1;
+
+                if(actual == (node - totalColumns)){ //norte
+                    tmp->arrNodes[tmpPosition] = NORTE;
+                } else if (actual == (node - 1)){ //oeste
+                    tmp->arrNodes[tmpPosition] = OESTE;
+                } else if(actual == (node + totalColumns)){ //sur
+                    tmp->arrNodes[tmpPosition] = SUR;
+                } else if (actual == (node + 1)){ //este
+                    tmp->arrNodes[tmpPosition] = ESTE;
+                }
+
+                enQueue(queue, tmp);
+            }
+        }
+        nonNodesLeft = 0;
+    }
+
+}
+
+void setupBFS(int ori1, int ori2, int des1, int des2){
+    int i;
+    for(i=0;i<nodes;i++)
+        bfsVisited[i] = 0;
+    
+    int oriNode = (ori1 * totalColumns) + ori2;
+    int desNode = (des1 * totalColumns) + des2;
+
+    clock_t t; 
+    t = clock(); 
+
+    bfs(oriNode, desNode);
+
+    t = clock() - t; 
+    double time_taken = ((double)t)/CLOCKS_PER_SEC;
+
+    bfsToOutput(time_taken);
+}
 void dfs(int node, int des)
 {
     int j;
@@ -293,4 +488,5 @@ void main(int argc,char* argv[])
     nodes = totalRows * totalColumns;
 
     setupDFS(oriRow,oriColumn,desRow,desColumn);
+    setupBFS(oriRow,oriColumn,desRow,desColumn);
 }
