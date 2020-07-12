@@ -155,7 +155,7 @@ vector<ii> prim()
 
 struct UnionFind
 {
-    vector<int> f; //the array contains the parent of each node
+     vector<int> f; //the array contains the parent of each node
     void init(int n)
     {
         f.clear();
@@ -186,15 +186,11 @@ typedef struct Ar
 bool operator<(const Ar &a, const Ar &b) { return a.w < b.w; }
 vector<Ar> E;
 
-int cmp (Edge a1, Edge a2){
-    return a1.w <= a2.w;
-}
-
 vector<ii> kruskal()
 {
     vector<ii> edges;
     ll cost = 0;
-    sort(E.begin(), E.end(), cmp); //ordenar aristas de menor a mayor
+    sort(E.begin(), E.end()); //ordenar aristas de menor a mayor
     uf.init(n);
 
     forall(it, E)
@@ -221,7 +217,7 @@ void convert(int filas, int columnas)
 {
     for (int i = 0; i < filas * columnas; i++)
     {
-        for (int j = 0; j < G[i].size(); j++)
+        for (int j = 0; j < sz(G[i]); j++)
         {
             int a = G[i][j].second;
             int b = G[i][j].first;

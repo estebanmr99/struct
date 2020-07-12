@@ -47,7 +47,7 @@ struct StackNode* newNode(struct Path *newPath)
 }
   
 int isEmpty(struct StackNode* stack) 
-{ 
+{
     return !stack; 
 } 
   
@@ -161,7 +161,6 @@ void dfs(int node, int des)
     while(!isEmpty(stack)){
         dfsPath =  pop(&stack);
         node = dfsPath->lastNode;
-        printf("%d ", node);
 
         dfsVisited[node] = 1;
 
@@ -189,17 +188,11 @@ void dfs(int node, int des)
                 } else if (actual == (node + 1)){ //este
                     tmp->arrNodes[tmpPosition] = ESTE;
                 }
-
                 push(&stack, tmp);
-            }else{
-                nonNodesLeft++;
             }
-            if(nonNodesLeft == 4)
-                pop(&stack);
         }
         nonNodesLeft = 0;
     }
-    printf("\n");
 }
 
 void setupDFS(int ori1, int ori2, int des1, int des2){
@@ -225,7 +218,7 @@ void read()
 {
     char c[MAX];
     int i = 0;
-    while (fgets(c, 100, stdin))
+    while (fgets(c, MAX, stdin))
     {
         char *p;
         p = c;
