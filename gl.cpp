@@ -12,7 +12,6 @@
 #define SET(a, b) ((a) |= (1UL << (b)))
 #define CLEAR(a, b) ((a) & ~(1UL << (b)))
 #define FLIP(a, b) ((a) ^ (1UL << (b)))
-#define dprint(v) cerr << #v "=" << v << endl //;)
 #define forr(i, a, b) for (int i = (a); i < (b); i++)
 #define forn(i, n) forr(i, 0, n)
 #define dforsn(i, a, b) for (int i = (b)-1; i >= a; i--)
@@ -149,7 +148,7 @@ vector<ii> prim()
             process(e.second.second);
         }
     }
-    cout << "Costo: " << cost << endl;
+
 
     return edges;
 }
@@ -183,6 +182,7 @@ typedef struct Ar
 {
     int a, b, w;
 } Edge;
+
 bool operator<(const Ar &a, const Ar &b) { return a.w < b.w; }
 vector<Ar> E;
 
@@ -227,31 +227,6 @@ void convert(int filas, int columnas)
             int b = G[i][j].first;
             Ar p = {i, a, b};
             E.push_back(p);
-        }
-    }
-}
-
-bool member(vector<ii> g, int element)
-{
-    for (int i = 0; i < g.size(); i++)
-    {
-        int a = g[i].second;
-        if (a == element)
-            return true;
-    }
-    return false;
-}
-
-void print(int cantNodes)
-{
-    for (int i = 0; i < cantNodes; i++)
-    {
-        cout << i << endl;
-        for (int j = 0; j < G[i].size(); j++)
-        {
-            int a = G[i][j].second;
-            int b = G[i][j].first;
-            cout << "[" << b << "," << a << "]" << endl;
         }
     }
 }

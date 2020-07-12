@@ -223,7 +223,7 @@ void setupDFS(int ori1, int ori2, int des1, int des2){
 
 void read()
 {
-    char c[10];
+    char c[MAX];
     int i = 0;
     while (fgets(c, 100, stdin))
     {
@@ -243,7 +243,6 @@ void read()
 
         totalRows++;
         i = 0;
-        
     }
 }
 
