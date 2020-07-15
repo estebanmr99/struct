@@ -24,7 +24,7 @@ using namespace std;
 typedef long long ll;
 typedef pair<int, int> ii;
 
-const int MAXN = 100000;
+const int MAXN = 1000000;
 
 vector<ii> G[MAXN];
 bool taken[MAXN];
@@ -139,7 +139,7 @@ vector<ii> prim()
         {
             cost += e.first;
             if(e.second.second < e.second.first){
-              edges.push_back(make_pair(e.second.second,e.second.first));  
+              edges.push_back(make_pair(e.second.second,e.second.first));
 
             }else
             {
@@ -275,7 +275,7 @@ void createGraph(int rows, int columns)
         }
         i++;
     }
-    
+
 }
 
 int main(int argc, char **argv)
@@ -308,4 +308,3 @@ int main(int argc, char **argv)
 
     return 0;
 }
-

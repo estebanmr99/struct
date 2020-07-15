@@ -7,9 +7,8 @@
 #include <pthread.h>
 #include <stdbool.h>
 
-#define MAX 10000
+#define MAX 100000
 #define MAXI 10000
-
 #define NORTE 0
 #define ESTE 1
 #define OESTE 2
@@ -19,15 +18,16 @@
 
 #define SET(a,b) ((a) |= (1<<(b)))
 
-bool is_glut_initialized_ = false;
-int totalRows, totalColumns, nodes;
+bool banderaBFS = false;
+bool banderaDFS = false;
+int totalRows, totalColumns, nodes,windowDFS,windowBFS;
 int row,column;
-int a[MAX][MAX];
+//int a[MAXI][MAXI];
 
 int maze[MAX][CAR], bfsVisited[MAX],dfsVisited[MAX];
 int inputMaze[MAXI][MAXI];
 
-struct timespec ts = {10,0};
+struct timespec ts = {1,0};
 
 struct Path *bfsPath;
 
@@ -38,6 +38,7 @@ struct Path *dfsPath;
 
 struct Path* pathsDFS[MAX];
 struct Node* stack = NULL;
+
 
 
 struct Path {
@@ -55,11 +56,214 @@ typedef struct{
   int timetoWait;
 } param;
 
+param* parametros;
 
 struct Node {
     struct Path* path;
     struct Node* next;
 };
+
+void init()
+{
+
+glClearColor(1, 1, 1, 1);
+
+glMatrixMode(GL_PROJECTION);
+
+gluOrtho2D(0, 800, 0,600);
+}
+
+GLvoid check(GLint x1, GLint y1, GLint x2, GLint y2, GLint x3, GLint y3, GLint x4, GLint y4,int i , int j){
+  if(inputMaze[i][j]==0){
+    glBegin(GL_LINE_LOOP);
+      glVertex3f(x1, y1, 0.0);
+      glVertex3f(x2, y2, 0.0);
+    glEnd();
+    glutSwapBuffers();
+    glBegin(GL_LINE_LOOP);
+      glVertex3f(x1, y1, 0.0);
+      glVertex3f(x4, y4, 0.0);
+    glEnd();
+  }
+  else if(inputMaze[i][j]==1){
+    glBegin(GL_LINE_LOOP);
+      glVertex3f(x1, y1, 0.0);
+      glVertex3f(x2, y2, 0.0);
+    glEnd();
+  }
+
+  else if(inputMaze[i][j]==2){
+    glBegin(GL_LINE_LOOP);
+      glVertex3f(x1, y1, 0.0);
+      glVertex3f(x4, y4, 0.0);
+    glEnd();
+  }
+
+
+}
+
+GLvoid drawSquare(GLint x1, GLint y1, GLint x2, GLint y2, GLint x3, GLint y3, GLint x4, GLint y4,int i , int j)
+{
+glLineWidth(0.5);
+glColor3f(0, 0, 0);
+if(i==totalRows-1){
+  if(j==totalColumns-1){
+    glBegin(GL_LINE_LOOP);
+      glVertex3f(x2, y2, 0.0);
+      glVertex3f(x3, y3, 0.0);
+    glEnd();
+    glutSwapBuffers();
+    }
+    glBegin(GL_LINE_LOOP);
+        glVertex3f(x3, y3, 0.0);
+        glVertex3f(x4, y4, 0.0);
+    glEnd();
+    glutSwapBuffers();
+    check(x1,y1,x2,y2,x3,y3,x4,y4,i,j);
+
+  }
+  else{
+    if(j==totalColumns-1){
+      glBegin(GL_LINE_LOOP);
+        glVertex3f(x2, y2, 0.0);
+        glVertex3f(x3, y3, 0.0);
+      glEnd();
+      glutSwapBuffers();
+      check(x1,y1,x2,y2,x3,y3,x4,y4,i,j);
+    }
+    else{
+        check(x1,y1,x2,y2,x3,y3,x4,y4,i,j);
+    }
+
+  }
+
+}
+
+
+void drawSquare2(GLint x1, GLint x2, GLint y1, GLint y2,int color)
+{
+//nanosleep(&ts,NULL);
+if(color == 0)
+  glColor3f(1, 0, 0); // black color value is 0 0 0
+else
+  glColor3f(1,1,1);
+glutSwapBuffers();
+if(totalRows>=50 || totalColumns>=50){
+    glPointSize(2.5);
+}
+else if(10>=totalRows && 10>=totalColumns){
+  glPointSize(500);
+}
+else if(50>totalRows && 50>totalColumns){
+  glPointSize(5);
+}
+
+glBegin(GL_POINTS);
+glVertex3f(((x2-x1)/2)+x1, ((y2-y1)/2)+y1, 0.0);
+glEnd();
+}
+
+
+GLvoid showPath(int type,int color){
+  struct Path* camino;
+  if(type == 0){
+    camino = bfsPath;
+  }
+  else
+    camino = dfsPath;
+  int nodoInicio = ((totalRows*row)+column)+row;
+  int cont = 0;
+  int i = totalRows-1;
+  while(nodoInicio>=cont+totalColumns){
+    cont = cont+totalColumns;
+    i--;
+  }
+  int j = nodoInicio - cont;
+  int n = camino->len;
+  GLfloat x;
+  GLfloat y;
+  x = ((double)800/(double)totalColumns)*(j);
+  y = ((double)600/(double)totalRows)*(i);
+  drawSquare2(x, x + (double)800/(double)totalColumns, y +(double)600/(double)totalRows,y,color);
+  for(int k = 0;k<n;k++){
+    glutSwapBuffers();
+    glColor3f(0.0, 1.0, 0.0);
+    if(camino->arrNodes[k]==ESTE){
+      j++;
+      GLfloat x;
+      GLfloat y;
+      x = ((double)800/(double)totalColumns)*(j);
+      y = ((double)600/(double)totalRows)*(i);
+      drawSquare2(x, x + (double)800/(double)totalColumns, y +(double)600/(double)totalRows,y,color);
+    }
+    else if(camino->arrNodes[k]==OESTE){
+      j--;
+      GLfloat x;
+      GLfloat y;
+      x = ((double)800/(double)totalColumns)*(j);
+      y = ((double)600/(double)totalRows)*(i);
+      drawSquare2(x, x + (double)800/(double)totalColumns, y +(double)600/(double)totalRows,y,color);
+
+    }
+    else if(camino->arrNodes[k]==SUR){
+      i--;
+      GLfloat x;
+      GLfloat y;
+      x = ((double)800/(double)totalColumns)*(j);
+      y = ((double)600/(double)totalRows)*(i);
+      drawSquare2(x, x + (double)800/(double)totalColumns, y +(double)600/(double)totalRows,y,color);
+    }
+    else if(camino->arrNodes[k]==NORTE){
+      i++;
+      GLfloat x;
+      GLfloat y;
+      x = ((double)800/(double)totalColumns)*(j);
+      y = ((double)600/(double)totalRows)*(i);
+      drawSquare2(x, x + (double)800/(double)totalColumns, y +(double)600/(double)totalRows,y,color);
+    }
+
+
+
+
+    }
+
+}
+
+
+void drawMaze()
+{
+glClear(GL_COLOR_BUFFER_BIT); // Clear display window
+GLfloat x = 0;
+GLfloat y = 0;
+int i = totalRows-1;
+int j = 0;
+while(i>=0){
+  while (j<totalColumns) {
+    drawSquare(x, y +(double)600/(double)totalRows, x + (double)800/(double)totalColumns, y +(double)600/(double)totalRows, x + (double)800/(double)totalColumns, y, x, y,i,j);
+    x += ((double)800/(double)totalColumns);
+    j++;
+  }
+  x = 0;
+  y += ((double)600/(double)totalRows);
+  j = 0;
+  i--;
+}
+// Process all OpenGL routine s as quickly as possible
+glFlush();
+}
+
+void displayBFS(){
+  drawMaze();
+  setupBFS(parametros->oriRow,parametros->oriColumn,parametros->desRow,parametros->desColumn);
+  glutSwapBuffers();
+}
+
+void displayDFS(){
+  drawMaze();
+  setupDFS(parametros->oriRow,parametros->oriColumn,parametros->desRow,parametros->desColumn);
+  glutSwapBuffers();
+}
+
 
 
 struct Node* newNode(struct Path *newPath)
@@ -303,8 +507,10 @@ void bfs(int node, int des)
 
     while(!isEmptyQ(queue)){
         bfsPath =  deQueue(queue);
+        showPath(0,0);
+        nanosleep(&ts,NULL);
+        showPath(0,1);
         node = bfsPath->lastNode;
-
         bfsVisited[node] = 1;
 
         if(node == des){
@@ -372,7 +578,11 @@ void dfs(int node, int des)
     push(&stack,tmp);
 
     while(!isEmpty(stack)){
+
         dfsPath =  pop(&stack);
+        showPath(1,0);
+        nanosleep(&ts,NULL);
+        showPath(1,1);
         node = dfsPath->lastNode;
 
         dfsVisited[node] = 1;
@@ -490,244 +700,37 @@ void formatInputMaze()
 
 }
 
-void init()
-{
-
-glClearColor(1, 1, 1, 1);
-
-glMatrixMode(GL_PROJECTION);
-
-gluOrtho2D(0, 800, 0,600);
-}
-
-GLvoid check(GLint x1, GLint y1, GLint x2, GLint y2, GLint x3, GLint y3, GLint x4, GLint y4,int i , int j){
-  if(a[i][j]==0){
-    glBegin(GL_LINE_LOOP);
-      glVertex3f(x1, y1, 0.0);
-      glVertex3f(x2, y2, 0.0);
-    glEnd();
-    glutSwapBuffers();
-    glBegin(GL_LINE_LOOP);
-      glVertex3f(x1, y1, 0.0);
-      glVertex3f(x4, y4, 0.0);
-    glEnd();
-  }
-  else if(a[i][j]==1){
-    glBegin(GL_LINE_LOOP);
-      glVertex3f(x1, y1, 0.0);
-      glVertex3f(x2, y2, 0.0);
-    glEnd();
-  }
-
-  else if(a[i][j]==2){
-    glBegin(GL_LINE_LOOP);
-      glVertex3f(x1, y1, 0.0);
-      glVertex3f(x4, y4, 0.0);
-    glEnd();
-  }
-
-
-}
-
-GLvoid drawSquare(GLint x1, GLint y1, GLint x2, GLint y2, GLint x3, GLint y3, GLint x4, GLint y4,int i , int j)
-{
-glLineWidth(0.5);
-glColor3f(0, 0, 0);
-if(i==0){
-  if(j==totalColumns-1){
-    glBegin(GL_LINE_LOOP);
-      glVertex3f(x2, y2, 0.0);
-      glVertex3f(x3, y3, 0.0);
-    glEnd();
-    glutSwapBuffers();
-    }
-    glBegin(GL_LINE_LOOP);
-        glVertex3f(x3, y3, 0.0);
-        glVertex3f(x4, y4, 0.0);
-    glEnd();
-    glutSwapBuffers();
-    check(x1,y1,x2,y2,x3,y3,x4,y4,i,j);
-
-  }
-  else{
-    if(j==totalColumns-1){
-      glBegin(GL_LINE_LOOP);
-        glVertex3f(x2, y2, 0.0);
-        glVertex3f(x3, y3, 0.0);
-      glEnd();
-      glutSwapBuffers();
-      check(x1,y1,x2,y2,x3,y3,x4,y4,i,j);
-    }
-    else{
-        check(x1,y1,x2,y2,x3,y3,x4,y4,i,j);
-    }
-
-  }
-
-}
-
-
-void drawSquare2(GLint x1, GLint x2, GLint y1, GLint y2)
-{
-
-glColor3f(1, 0, 0); // black color value is 0 0 0
-glutSwapBuffers();
-if(totalRows>=50 || totalColumns>=50){
-    glPointSize(2.5);
-}
-else if(10>=totalRows && 10>=totalColumns){
-  glPointSize(500);
-}
-else if(50>totalRows && 50>totalColumns){
-  glPointSize(5);
-}
-
-glBegin(GL_POINTS);
-glVertex3f(((x2-x1)/2)+x1, ((y2-y1)/2)+y1, 0.0);
-glEnd();
-}
-
-
-GLvoid showPath(int type){
-  struct Path* camino;
-  if(type == 0){
-    camino = bfsPath;
-  }
-  else
-    camino = dfsPath;
-  int nodoInicio = ((totalRows*row)+column)+row;
-  int cont = 0;
-  int i = totalRows-1;
-  while(nodoInicio>=cont+totalColumns){
-    cont = cont+totalColumns;
-    i--;
-  }
-  int j = nodoInicio - cont;
-  int n = camino->len;
-  GLfloat x;
-  GLfloat y;
-  x = ((double)800/(double)totalColumns)*(j);
-  y = ((double)600/(double)totalRows)*(i);
-  drawSquare2(x, x + (double)800/(double)totalColumns, y +(double)600/(double)totalRows,y);
-  for(int k = 0;k<n;k++){
-    glutSwapBuffers();
-    glColor3f(0.0, 1.0, 0.0);
-    if(camino->arrNodes[k]==ESTE){
-      j++;
-      GLfloat x;
-      GLfloat y;
-      x = ((double)800/(double)totalColumns)*(j);
-      y = ((double)600/(double)totalRows)*(i);
-      drawSquare2(x, x + (double)800/(double)totalColumns, y +(double)600/(double)totalRows,y);
-    }
-    else if(camino->arrNodes[k]==OESTE){
-      j--;
-      GLfloat x;
-      GLfloat y;
-      x = ((double)800/(double)totalColumns)*(j);
-      y = ((double)600/(double)totalRows)*(i);
-      drawSquare2(x, x + (double)800/(double)totalColumns, y +(double)600/(double)totalRows,y);
-
-    }
-    else if(camino->arrNodes[k]==SUR){
-      i--;
-      GLfloat x;
-      GLfloat y;
-      x = ((double)800/(double)totalColumns)*(j);
-      y = ((double)600/(double)totalRows)*(i);
-      drawSquare2(x, x + (double)800/(double)totalColumns, y +(double)600/(double)totalRows,y);
-    }
-    else if(camino->arrNodes[k]==NORTE){
-      i++;
-      GLfloat x;
-      GLfloat y;
-      x = ((double)800/(double)totalColumns)*(j);
-      y = ((double)600/(double)totalRows)*(i);
-      drawSquare2(x, x + (double)800/(double)totalColumns, y +(double)600/(double)totalRows,y);
-    }
-
-
-
-
-    }
-
-}
-
-
-void drawMaze()
-{
-glClear(GL_COLOR_BUFFER_BIT); // Clear display window
-GLfloat x = 0;
-GLfloat y = 0;
-int i = 0;
-int j = 0;
-while(i<totalRows){
-  while (j<totalColumns) {
-    drawSquare(x, y +(double)600/(double)totalRows, x + (double)800/(double)totalColumns, y +(double)600/(double)totalRows, x + (double)800/(double)totalColumns, y, x, y,i,j);
-    x += ((double)800/(double)totalColumns);
-    j++;
-  }
-  x = 0;
-  y += ((double)600/(double)totalRows);
-  j = 0;
-  i++;
-}
-// Process all OpenGL routine s as quickly as possible
-glFlush();
-}
-
-
-
-void displayBFS(){
-  drawMaze();
-  showPath(0);
-  glutSwapBuffers();
-}
-
-void displayDFS(){
-  drawMaze();
-  showPath(1);
-  glutSwapBuffers();
-}
-
 void *threadBfs(void* p)
 {
     param* parametros = (param*) p;
-    setupBFS(parametros->oriRow,parametros->oriColumn,parametros->desRow,parametros->desColumn);
-    int j,k,f,g;
-    for (j = totalRows-1, k = 0; j >= 0; j--, k++){
-      for (f = 0, g = 0; f <totalColumns; f++, g++){
-         a[k][f] = inputMaze[j][g];
-      }
-    }
+
     glutInitWindowPosition(0, 0);
     glutInitWindowSize(800, 600);
     glutCreateWindow("Maze BFS");
     init();
     glutDisplayFunc(displayBFS);
+
+
     return NULL;
 }
 
 void *threadDfs(void* p)
 {
-    param* parametros = (param*) p;
-    setupDFS(parametros->oriRow,parametros->oriColumn,parametros->desRow,parametros->desColumn);
 
-    int j,k,f,g;
-    for (j = totalRows-1, k = 0; j >= 0; j--, k++){
-      for (f = 0, g = 0; f <totalColumns; f++, g++){
-         a[k][f] = inputMaze[j][g];
-      }
-    }
-    glutInitWindowPosition(0, 0);
+    param* parametros = (param*) p;
+    glutInitWindowPosition(1000000, 0);
     glutInitWindowSize(800, 600);
     glutCreateWindow("Maze DFS");
     init();
     glutDisplayFunc(displayDFS);
 
 
+
+
     return NULL;
 }
+
+
 
 void main(int argc,char* argv[])
 {
@@ -742,7 +745,7 @@ void main(int argc,char* argv[])
     nodes = totalColumns * totalRows;
     memset(maze, -1, MAX);
     formatInputMaze();
-    param* parametros = (param*)malloc(sizeof(param));
+    parametros = (param*)malloc(sizeof(param));
     parametros -> oriRow = oriRow;
     parametros -> oriColumn = oriColumn;
     parametros -> desRow = desRow;
@@ -754,12 +757,12 @@ void main(int argc,char* argv[])
     char* argv1[] = { "res"};
     glutInit(&argc1,argv1) ;
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
-    pthread_create(&thread_bfs, NULL, threadBfs, parametros);
+    pthread_create(&thread_bfs, NULL, threadBfs, NULL);
     pthread_join(thread_bfs, NULL);
-    pthread_create(&thread_dfs, NULL, threadDfs, parametros);
+    pthread_create(&thread_dfs, NULL, threadDfs, NULL);
+
     pthread_join(thread_dfs, NULL);
     glutMainLoop();
-
 
 
 }
