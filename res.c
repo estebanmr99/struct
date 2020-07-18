@@ -41,6 +41,7 @@ struct Path *dfsPath;
 struct Path *pathsDFS[MAX];
 struct Node *stack = NULL;
 
+// representa un camnino ya sea del DFS o BFS
 struct Path
 {
     int lastNode;
@@ -48,6 +49,7 @@ struct Path
     int arrNodes[MAX];
 };
 
+// representa los parametros que entran por consola
 typedef struct
 {
     int oriRow;
@@ -59,6 +61,7 @@ typedef struct
 
 param *parametros;
 
+// como su nombre lo dice representa un nodo para una lista enlazada
 struct Node
 {
     struct Path *path;
@@ -157,11 +160,15 @@ void drawSquare2(GLint x1, GLint x2, GLint y1, GLint y2, int color)
     {
         glPointSize(2.5);
     }
-    else if (10 >= totalRows && 10 >= totalColumns)
+    else if (totalRows <= 5  && totalColumns <= 5)
     {
-        glPointSize(500);
+        glPointSize(40);
     }
-    else if (50 > totalRows && 50 > totalColumns)
+    else if (totalRows <= 10  && totalColumns <= 10)
+    {
+        glPointSize(25);
+    }
+    else if (totalRows < 50 && totalColumns < 50)
     {
         glPointSize(5);
     }
@@ -262,6 +269,8 @@ void drawMaze()
     glFlush();
 }
 
+// Entrada: No tiene parametros
+// Salida: No tiene retorno
 void displayBFS()
 {
     drawMaze();
@@ -269,6 +278,8 @@ void displayBFS()
     glutSwapBuffers();
 }
 
+// Entrada: No tiene parametros
+// Salida: No tiene retorno
 void displayDFS()
 {
     drawMaze();
@@ -276,6 +287,7 @@ void displayDFS()
     glutSwapBuffers();
 }
 
+// agrega un nodo a la pila
 struct Node *newNode(struct Path *newPath)
 {
     struct Node *stackNode = (struct Node *)malloc(sizeof(struct Node));
@@ -286,11 +298,15 @@ struct Node *newNode(struct Path *newPath)
 
 void display();
 
+// Entrada: Recibe puntero a la pila
+// Salida: Retorna 0 o 1 dependiendo si la pila esta vacia
 int isEmpty(struct Node *stack)
 {
     return !stack;
 }
 
+// Entrada: Recibe puntero a un puntero de la pila, el camino que va a agregar a la pila
+// Salida: No tiene retorno
 void push(struct Node **stack, struct Path *newPath)
 {
     struct Node *stackNode = newNode(newPath);
@@ -298,6 +314,8 @@ void push(struct Node **stack, struct Path *newPath)
     *stack = stackNode;
 }
 
+// Entrada: Recibe puntero a un puntero de la pila
+// Salida: Retorna  un camino elinminado de la pila
 struct Path *pop(struct Node **stack)
 {
     if (isEmpty(*stack))
@@ -310,11 +328,12 @@ struct Path *pop(struct Node **stack)
     return popped;
 }
 
-
+// representa una cola
 struct Queue
 {
     struct Node *front, *rear;
 };
+
 // Entrada: No recibe parametros
 // Salida:  Retorna una estructura que representa la cola
 struct Queue *createQueue()
@@ -357,6 +376,8 @@ struct Path *copyPathBFS()
     return path;
 }
 
+// Entrada: No recibe nada
+// Salida: Devuelve una copia de la ultima ruta del DFS
 struct Path *copyPath()
 {
     struct Path *path = (struct Path *)malloc(sizeof(struct Path));
@@ -420,6 +441,8 @@ struct Path *deQueue(struct Queue *q)
     return deQueue;
 }
 
+// Entrada: Recibe un doble que representa el tiempo 
+// Salida: No tiene retorno
 void dfsToOutput(double time_taken)
 {
     int i;
@@ -593,6 +616,7 @@ void bfs(int node, int des)
         nonNodesLeft = 0;
     }
 }
+
 // Entrada: recibe cuatro enteros que representan los puntos de origen y detsino
 // Salida: No tiene retorno
 void setupBFS(int ori1, int ori2, int des1, int des2)
@@ -614,6 +638,9 @@ void setupBFS(int ori1, int ori2, int des1, int des2)
 
     bfsToOutput(time_taken);
 }
+
+// Entrada: Recibe dos enteros, uno que representa origen y el otro destino
+// Salida: No tiene retorno
 void dfs(int node, int des)
 {
     int j;
@@ -680,6 +707,8 @@ void dfs(int node, int des)
     }
 }
 
+// Entrada: recibe cuatro enteros que representan los puntos de origen y detsino
+// Salida: No tiene retorno
 void setupDFS(int ori1, int ori2, int des1, int des2)
 {
     int i;
@@ -699,6 +728,7 @@ void setupDFS(int ori1, int ori2, int des1, int des2)
 
     dfsToOutput(time_taken);
 }
+
 // Entrada: No recibe parametros
 // Salida: No tiene retorno
 //Se encarga de leer la matriz desde la consola
@@ -726,6 +756,7 @@ void read()
         i = 0;
     }
 }
+
 // Entrada: No recibe parametros
 // Salida: No tiene retorno
 // Se encarga de convertir los datos del archivo a una matriz representativa
