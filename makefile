@@ -9,7 +9,7 @@ TARGETCPP=generadorLaberinto
 all: c cpp
 
 c:
-	$(CC) -o $(TARGETC) $(SOURCEC)
+	$(CC) $(SOURCEC) -o $(TARGETC)  -lGL -lGLU -lglut -lpthread
 
 cpp:
 	$(CXX) -o $(TARGETCPP) $(SOURCECPP)
