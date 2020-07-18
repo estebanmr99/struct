@@ -310,24 +310,28 @@ struct Path *pop(struct Node **stack)
     return popped;
 }
 
-// The queue, front stores the front node of LL and rear stores the
-// last node of LL
+
 struct Queue
 {
     struct Node *front, *rear;
 };
-
+// Entrada: No recibe parametros
+// Salida:  Retorna una estructura que representa la cola
 struct Queue *createQueue()
 {
     struct Queue *q = (struct Queue *)malloc(sizeof(struct Queue));
     q->front = q->rear = NULL;
     return q;
 }
+
+// Entrada:  Recibe una cola
+// Salida: Retorna un bool, indicando si esta vacía o no 
 int isEmptyQ(struct Queue *queue)
 {
     return !queue;
 }
-
+// Entrada: No recibe parametros
+// Salida: Devuelve un struct de tipo path, que contiene la ruta copiada
 struct Path *copyPathBFS()
 {
     struct Path *path = (struct Path *)malloc(sizeof(struct Path));
@@ -378,6 +382,9 @@ struct Path *copyPath()
     return path;
 }
 
+// Entrada: Recibe una cola y una estructura tipo path
+// Salida: Devuelve la cola recibida, con el nuevo nodo insertado 
+
 void enQueue(struct Queue *q, struct Path *k)
 {
     struct Node *temp = newNode(k);
@@ -391,6 +398,9 @@ void enQueue(struct Queue *q, struct Path *k)
     q->rear->next = temp;
     q->rear = temp;
 }
+
+// Entrada: Recibe una cola
+// Salida: Una estructura tipo path con el nodo eliminado
 
 struct Path *deQueue(struct Queue *q)
 {
@@ -461,6 +471,9 @@ void dfsToOutput(double time_taken)
         printf(" %d ", path[i]);
     printf("\n");
 }
+
+// Entrada: Recibe un doble que representa el tiempo 
+// Salida: No tiene retorno
 void bfsToOutput(double time_taken)
 {
     int i;
@@ -512,6 +525,9 @@ void bfsToOutput(double time_taken)
         printf(" %d ", path[i]);
     printf("\n");
 }
+
+// Entrada: Recibe dos enteros, uno que representa origen y el otro destino
+// Salida: No tiene retorno
 void bfs(int node, int des)
 {
     int j;
@@ -577,7 +593,8 @@ void bfs(int node, int des)
         nonNodesLeft = 0;
     }
 }
-
+// Entrada: recibe cuatro enteros que representan los puntos de origen y detsino
+// Salida: No tiene retorno
 void setupBFS(int ori1, int ori2, int des1, int des2)
 {
     int i;
@@ -682,7 +699,9 @@ void setupDFS(int ori1, int ori2, int des1, int des2)
 
     dfsToOutput(time_taken);
 }
-
+// Entrada: No recibe parametros
+// Salida: No tiene retorno
+//Se encarga de leer la matriz desde la consola
 void read()
 {
     char c[MAX];
@@ -707,7 +726,9 @@ void read()
         i = 0;
     }
 }
-
+// Entrada: No recibe parametros
+// Salida: No tiene retorno
+// Se encarga de convertir los datos del archivo a una matriz representativa
 void formatInputMaze()
 {
     int i, j, tmp, tmpWest, tmpNorth;
