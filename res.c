@@ -18,6 +18,9 @@
 
 #define SET(a,b) ((a) |= (1<<(b)))
 
+
+
+
 bool banderaBFS = false;
 bool banderaDFS = false;
 int totalRows, totalColumns, nodes,windowDFS,windowBFS;
@@ -27,7 +30,7 @@ int row,column;
 int maze[MAX][CAR], bfsVisited[MAX],dfsVisited[MAX];
 int inputMaze[MAXI][MAXI];
 
-struct timespec ts = {1,0};
+struct timespec tim, tim2;
 
 struct Path *bfsPath;
 
@@ -508,12 +511,13 @@ void bfs(int node, int des)
     while(!isEmptyQ(queue)){
         bfsPath =  deQueue(queue);
         showPath(0,0);
-        nanosleep(&ts,NULL);
+        nanosleep(&tim,NULL);
         showPath(0,1);
         node = bfsPath->lastNode;
         bfsVisited[node] = 1;
 
         if(node == des){
+            showPath(0,0);
             break;
         }
 
@@ -581,13 +585,14 @@ void dfs(int node, int des)
 
         dfsPath =  pop(&stack);
         showPath(1,0);
-        nanosleep(&ts,NULL);
+        nanosleep(&tim,NULL);
         showPath(1,1);
         node = dfsPath->lastNode;
 
         dfsVisited[node] = 1;
 
         if(node == des){
+            showPath(1,0);
             break;
         }
 
@@ -739,6 +744,8 @@ void main(int argc,char* argv[])
     int desRow = atoi(argv[3]);
     int desColumn = atoi(argv[4]);
     int timetoWait = atoi(argv[5]);
+    tim.tv_sec  = timetoWait;
+    tim.tv_nsec = 0;
     row = oriRow;
     column = oriColumn;
     read();
