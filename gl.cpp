@@ -26,10 +26,9 @@ typedef pair<int, int> ii;
 
 const int MAXN = 1000000;
 
-vector<ii> G[MAXN]; 
+vector<ii> G[MAXN];
 bool taken[MAXN];
 
-// comparador para la cola de prioridad
 struct comparator
 {
     bool operator()(pair<int, int> const &a, pair<int, int> const &b) const
@@ -38,8 +37,6 @@ struct comparator
     }
 };
 
-// Entrada: Recibe vector de pares que representa el camino dado por Prim o Kruskal
-// Salida: Cola de prioridad para los vertices en base al primer Nodo del par
 typedef priority_queue<pair<int, int>, vector<pair<int, int>>, comparator> my_priority_queue;
 my_priority_queue fillPriorityQueue(vector<pair<int, int>> &matrix)
 {
@@ -53,8 +50,6 @@ my_priority_queue fillPriorityQueue(vector<pair<int, int>> &matrix)
     return mpq;
 }
 
-// Entrada: Nada
-// Salida: Numero totalmente random
 int getRandomInt()
 {
         ifstream randomStream;
@@ -75,10 +70,9 @@ int getRandomInt()
 return randomInt;
 }
 
-// Entrada: Recibe vector de vectores que representa la matriz de mascara de bits
-// Salida: Nada
 void createFile(vector<vector<int>> &matrix)
 {
+
     for (int i = 0; i < matrix.size(); i++)
     {
         for (int j = 0; j < matrix[i].size(); j++)
@@ -86,10 +80,9 @@ void createFile(vector<vector<int>> &matrix)
         if(!(i == matrix.size() - 1))
             cout << endl;
     }
+
 }
 
-// Entrada: Recibe cola de prioridad que representa en que orden se tiene que llenar la matriz
-// Salida: Retorna vector de vectores que representa la matriz de mascara de bits
 vector<vector<int>> fillBinaryMatrix(my_priority_queue &priority, int row, int column)
 {
     vector<vector<int>> binaryMatrix(row, vector<int>(column, 0));
@@ -126,16 +119,12 @@ vector<vector<int>> fillBinaryMatrix(my_priority_queue &priority, int row, int c
 
 typedef pair<int, pair<int, int>> ip;
 priority_queue<ip, vector<ip>, greater<ip>> pq; //min heap
-
-// Entrada: entero que representa el nodo inicial
-// Salida: No retorna nada.
 void process(int v)
 {
     taken[v] = true;
     forall(it, G[v]) if (!taken[it->second]) pq.push(make_pair(it->first, make_pair(v, it->second)));
 }
-// Entrada: No recibe parametros
-// Salida: Retorna un vector de pares que representan las aristas
+
 vector<ii> prim()
 {
     vector<ii> edges;
@@ -166,24 +155,16 @@ vector<ii> prim()
 
 struct UnionFind
 {
-     vector<int> f;
-
-// Entrada: Recibe un tamaño
-// Salida: No tiene retorno 
+     vector<int> f; //the array contains the parent of each node
     void init(int n)
     {
         f.clear();
         f.insert(f.begin(), n, -1);
     }
-// Entrada: Recibe un entero que representa un nodo 
-// Salida: Retorna un entero que es el numero del componente conexo
     int comp(int x)
     {
         return (f[x] == -1 ? x : f[x] = comp(f[x]));
     } //O(1)
-
-// Entrada: Recibe dos entero que representan dos nodos
-// Salida: Retorna un bool cuando que indica si se pudieron unir en un componente conexo
     bool join(int i, int j)
     {
         bool con = comp(i) == comp(j);
@@ -197,8 +178,6 @@ struct UnionFind
 
 int n;
 
-//Structura que representa una arista
-
 typedef struct Ar
 {
     int a, b, w;
@@ -207,8 +186,6 @@ typedef struct Ar
 bool operator<(const Ar &a, const Ar &b) { return a.w < b.w; }
 vector<Ar> E;
 
-// Entrada: No recibe ningun parametro
-// Salida: Retorna un vector de pares que representan las aristas 
 vector<ii> kruskal()
 {
     vector<ii> edges;
@@ -236,8 +213,6 @@ vector<ii> kruskal()
     return edges;
 }
 
-// Entrada: Recibe dos enteros, la cantidad de filas y la cantidad de columnas
-// Salida: No tiene retorno
 void convert(int filas, int columnas)
 {
     for (int i = 0; i < filas * columnas; i++)
