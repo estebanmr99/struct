@@ -26,7 +26,7 @@ typedef pair<int, int> ii;
 
 const int MAXN = 1000000;
 
-vector<ii> G[MAXN];
+vector<ii> G[MAXN]; 
 bool taken[MAXN];
 
 struct comparator
@@ -119,12 +119,16 @@ vector<vector<int>> fillBinaryMatrix(my_priority_queue &priority, int row, int c
 
 typedef pair<int, pair<int, int>> ip;
 priority_queue<ip, vector<ip>, greater<ip>> pq; //min heap
+
+// Entrada: entero que representa el nodo inicial
+// Salida: No retorna nada.
 void process(int v)
 {
     taken[v] = true;
     forall(it, G[v]) if (!taken[it->second]) pq.push(make_pair(it->first, make_pair(v, it->second)));
 }
-
+// Entrada: No recibe parametros
+// Salida: Retorna un vector de pares que representan las aristas
 vector<ii> prim()
 {
     vector<ii> edges;
@@ -156,15 +160,23 @@ vector<ii> prim()
 struct UnionFind
 {
      vector<int> f; //the array contains the parent of each node
+
+// Entrada: Recibe un tamaño
+// Salida: No tiene retorno 
     void init(int n)
     {
         f.clear();
         f.insert(f.begin(), n, -1);
     }
+// Entrada: Recibe un entero que representa un nodo 
+// Salida: Retorna un entero que es el numero del componente conexo
     int comp(int x)
     {
         return (f[x] == -1 ? x : f[x] = comp(f[x]));
     } //O(1)
+
+// Entrada: Recibe dos entero que representan dos nodos
+// Salida: Retorna un bool cuando que indica si se pudieron unir en un componente conexo
     bool join(int i, int j)
     {
         bool con = comp(i) == comp(j);
@@ -178,6 +190,8 @@ struct UnionFind
 
 int n;
 
+//Structura que representa una arista
+
 typedef struct Ar
 {
     int a, b, w;
@@ -186,6 +200,8 @@ typedef struct Ar
 bool operator<(const Ar &a, const Ar &b) { return a.w < b.w; }
 vector<Ar> E;
 
+// Entrada: No recibe ningun parametro
+// Salida: Retorna un vector de pares que representan las aristas 
 vector<ii> kruskal()
 {
     vector<ii> edges;
@@ -213,6 +229,8 @@ vector<ii> kruskal()
     return edges;
 }
 
+// Entrada: Recibe dos enteros, la cantidad de filas y la cantidad de columnas
+// Salida: No tiene retorno
 void convert(int filas, int columnas)
 {
     for (int i = 0; i < filas * columnas; i++)
