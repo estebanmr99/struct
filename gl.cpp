@@ -29,6 +29,7 @@ const int MAXN = 1000000;
 vector<ii> G[MAXN]; 
 bool taken[MAXN];
 
+// comparador para la cola de prioridad
 struct comparator
 {
     bool operator()(pair<int, int> const &a, pair<int, int> const &b) const
@@ -37,6 +38,8 @@ struct comparator
     }
 };
 
+// Entrada: Recibe vector de pares que representa el camino dado por Prim o Kruskal
+// Salida: Cola de prioridad para los vertices en base al primer Nodo del par
 typedef priority_queue<pair<int, int>, vector<pair<int, int>>, comparator> my_priority_queue;
 my_priority_queue fillPriorityQueue(vector<pair<int, int>> &matrix)
 {
@@ -50,6 +53,8 @@ my_priority_queue fillPriorityQueue(vector<pair<int, int>> &matrix)
     return mpq;
 }
 
+// Entrada: Nada
+// Salida: Numero totalmente random
 int getRandomInt()
 {
         ifstream randomStream;
@@ -70,9 +75,10 @@ int getRandomInt()
 return randomInt;
 }
 
+// Entrada: Recibe vector de vectores que representa la matriz de mascara de bits
+// Salida: Nada
 void createFile(vector<vector<int>> &matrix)
 {
-
     for (int i = 0; i < matrix.size(); i++)
     {
         for (int j = 0; j < matrix[i].size(); j++)
@@ -80,9 +86,10 @@ void createFile(vector<vector<int>> &matrix)
         if(!(i == matrix.size() - 1))
             cout << endl;
     }
-
 }
 
+// Entrada: Recibe cola de prioridad que representa en que orden se tiene que llenar la matriz
+// Salida: Retorna vector de vectores que representa la matriz de mascara de bits
 vector<vector<int>> fillBinaryMatrix(my_priority_queue &priority, int row, int column)
 {
     vector<vector<int>> binaryMatrix(row, vector<int>(column, 0));
@@ -159,7 +166,7 @@ vector<ii> prim()
 
 struct UnionFind
 {
-     vector<int> f; //the array contains the parent of each node
+     vector<int> f;
 
 // Entrada: Recibe un tamaño
 // Salida: No tiene retorno 
