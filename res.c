@@ -68,6 +68,7 @@ struct Node
     struct Node *next;
 };
 
+// Prepara el fondo y tamaño de la ventana de la interfaz.
 void init()
 {
 
@@ -78,6 +79,8 @@ void init()
     gluOrtho2D(0, 800, 0, 600);
 }
 
+
+// Le entra coordenadas para representar la matriz y verifica en que posicion debe colocar las lineas para representar el laberinto.
 GLvoid check(GLint x1, GLint y1, GLint x2, GLint y2, GLint x3, GLint y3, GLint x4, GLint y4, int i, int j)
 {
     if (inputMaze[i][j] == 0)
@@ -109,6 +112,7 @@ GLvoid check(GLint x1, GLint y1, GLint x2, GLint y2, GLint x3, GLint y3, GLint x
     }
 }
 
+// Es la funcion que dibuja cada posicion del laberinto.
 GLvoid drawSquare(GLint x1, GLint y1, GLint x2, GLint y2, GLint x3, GLint y3, GLint x4, GLint y4, int i, int j)
 {
     glLineWidth(0.5);
@@ -148,6 +152,7 @@ GLvoid drawSquare(GLint x1, GLint y1, GLint x2, GLint y2, GLint x3, GLint y3, GL
     }
 }
 
+// se utiliza en showpath para representar los puntos que se muestran en el camino del dfs y bfs.
 void drawSquare2(GLint x1, GLint x2, GLint y1, GLint y2, int color)
 {
     //nanosleep(&ts,NULL);
@@ -178,6 +183,8 @@ void drawSquare2(GLint x1, GLint x2, GLint y1, GLint y2, int color)
     glEnd();
 }
 
+
+// Se utiliza para mostrar el camino que se va pintando con el dfs y bfs.
 GLvoid showPath(int type, int color)
 {
     struct Path *camino;
@@ -186,16 +193,9 @@ GLvoid showPath(int type, int color)
         camino = bfsPath;
     }
     else
-        camino = dfsPath;
-    int nodoInicio = ((totalRows * row) + column) + row;
-    int cont = 0;
-    int i = totalRows - 1;
-    while (nodoInicio >= cont + totalColumns)
-    {
-        cont = cont + totalColumns;
-        i--;
-    }
-    int j = nodoInicio - cont;
+    camino = dfsPath;
+    int i = (totalRows - 1)-parametros->oriRow;
+    int j = parametros->oriColumn;
     int n = camino->len;
     GLfloat x;
     GLfloat y;
@@ -245,6 +245,7 @@ GLvoid showPath(int type, int color)
     }
 }
 
+// Pinta el laberinto.
 void drawMaze()
 {
     glClear(GL_COLOR_BUFFER_BIT); // Clear display window
@@ -344,7 +345,7 @@ struct Queue *createQueue()
 }
 
 // Entrada:  Recibe una cola
-// Salida: Retorna un bool, indicando si esta vacía o no 
+// Salida: Retorna un bool, indicando si esta vacía o no
 int isEmptyQ(struct Queue *queue)
 {
     return !queue;
@@ -404,7 +405,7 @@ struct Path *copyPath()
 }
 
 // Entrada: Recibe una cola y una estructura tipo path
-// Salida: Devuelve la cola recibida, con el nuevo nodo insertado 
+// Salida: Devuelve la cola recibida, con el nuevo nodo insertado
 
 void enQueue(struct Queue *q, struct Path *k)
 {
@@ -441,7 +442,7 @@ struct Path *deQueue(struct Queue *q)
     return deQueue;
 }
 
-// Entrada: Recibe un doble que representa el tiempo 
+// Entrada: Recibe un doble que representa el tiempo
 // Salida: No tiene retorno
 void dfsToOutput(double time_taken)
 {
@@ -495,7 +496,7 @@ void dfsToOutput(double time_taken)
     printf("\n");
 }
 
-// Entrada: Recibe un doble que representa el tiempo 
+// Entrada: Recibe un doble que representa el tiempo
 // Salida: No tiene retorno
 void bfsToOutput(double time_taken)
 {
@@ -796,6 +797,7 @@ void formatInputMaze()
     }
 }
 
+//Es la funcion que se utiliza para iniciar el hilo que llama la ventana de la solucion del bfs.
 void *threadBfs(void *p)
 {
     param *parametros = (param *)p;
@@ -808,7 +810,7 @@ void *threadBfs(void *p)
 
     return NULL;
 }
-
+//Es la funcion que se utiliza para iniciar el hilo que llama la ventana de la solucion del dfs.
 void *threadDfs(void *p)
 {
 

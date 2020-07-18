@@ -26,7 +26,7 @@ typedef pair<int, int> ii;
 
 const int MAXN = 1000000;
 
-vector<ii> G[MAXN]; 
+vector<ii> G[MAXN];
 bool taken[MAXN];
 
 // comparador para la cola de prioridad
@@ -169,13 +169,13 @@ struct UnionFind
      vector<int> f;
 
 // Entrada: Recibe un tamaño
-// Salida: No tiene retorno 
+// Salida: No tiene retorno
     void init(int n)
     {
         f.clear();
         f.insert(f.begin(), n, -1);
     }
-// Entrada: Recibe un entero que representa un nodo 
+// Entrada: Recibe un entero que representa un nodo
 // Salida: Retorna un entero que es el numero del componente conexo
     int comp(int x)
     {
@@ -208,7 +208,7 @@ bool operator<(const Ar &a, const Ar &b) { return a.w < b.w; }
 vector<Ar> E;
 
 // Entrada: No recibe ningun parametro
-// Salida: Retorna un vector de pares que representan las aristas 
+// Salida: Retorna un vector de pares que representan las aristas
 vector<ii> kruskal()
 {
     vector<ii> edges;
@@ -252,6 +252,8 @@ void convert(int filas, int columnas)
     }
 }
 
+// Entrada: numero de columnas y filas que va a tener el grafo.
+// Salida:  un vector de pares de tamaño filas por columnas.
 void createGraph(int rows, int columns)
 {
     int nodo = 0;
